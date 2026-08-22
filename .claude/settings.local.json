@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(CSS=public/build/assets/app-BKAATMGg.css)",
+      "Bash(for c in 'bg-indigo-600' 'hover:bg-indigo-700' 'focus:ring-indigo-500' 'min-h-\\[70vh\\]')",
+      "Bash(do grep -q \"$c\" \"$CSS\")",
+      "Bash(echo \"PRESENT : $c\")",
+      "Bash(echo \"MISSING : $c\")",
+      "Bash(done)",
+      "Bash(for c in 'bg-indigo-700' 'ring-indigo-500' '70vh')",
+      "Bash(do grep -qF \"$c\" \"$CSS\")",
+      "Bash(\"$HOME/.config/herd/bin/php84.bat\" artisan view:cache)",
+      "Bash(echo \"---EXIT:$?-\")",
+      "Bash(\"$HOME/.config/herd/bin/php84.bat\" artisan view:clear)",
+      "Bash(npm run build)",
+      "Bash(~/.config/herd/bin/php84.bat artisan view:cache)",
+      "Bash(echo \"---EXIT:$?--\")",
+      "Bash(~/.config/herd/bin/php84.bat artisan view:clear)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
