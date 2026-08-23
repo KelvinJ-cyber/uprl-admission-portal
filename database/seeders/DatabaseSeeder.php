@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Staff;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,9 +18,11 @@ class DatabaseSeeder extends Seeder
     {
         // Staff::factory(10)->create();
 
-        Staff::factory()->create([
+        Staff::create([
             'name' => 'Test Staff',
             'email' => 'test@example.com',
+            'password' => Hash::make('password'),
+            'role' => 'admin',
         ]);
     }
 }

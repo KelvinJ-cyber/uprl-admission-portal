@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Services\PaystackService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
@@ -20,9 +21,10 @@ class PaymentController extends Controller
     /**
      * @throws ConnectionException
      */
+    // Initialize the payment process for screening fee
     public function screeningPay(Request $request)
     {
-        $candidate = auth("candidate")->user();
+        $candidate = auth('candidate')->user();
 
         $screeningFee = 2000;
 
@@ -32,8 +34,11 @@ class PaymentController extends Controller
             callback_url: route('candidate.payment.callback')
         );
 
+        $invoiceNumber = 'INV-'.now()->format('Ymd').'-'.str_pad($candidate->id, 5, '0', STR_PAD_LEFT);
+
         Payment::create([
             'candidate_id' => $candidate->id,
+            'invoice_number' => $invoiceNumber,
             'type' => 'screening',
             'amount' => $screeningFee,
             'reference' => $result['reference'],
@@ -47,6 +52,8 @@ class PaymentController extends Controller
     /**
      * @throws ConnectionException
      */
+
+    // Handle the callback from Paystack after payment
     public function callback(Request $request)
     {
         $reference = $request->query('reference');
@@ -65,5 +72,12 @@ class PaymentController extends Controller
         $payment->update(['status' => 'failed']);
 
         return redirect()->route('candidate.dashboard')->with('error', 'Payment could not be verified. Please try again.');
+    }
+
+    public function receipt(Payment $payment): View
+    {
+        abort_if($payment->candidate_id !== auth('candidate')->id(), 403);
+
+        return view('candidate.payment.receipt', ['payment' => $payment]);
     }
 }

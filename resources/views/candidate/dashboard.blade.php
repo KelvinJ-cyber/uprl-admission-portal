@@ -20,6 +20,14 @@
             'Course applied for' => $candidate->course?->name ?? 'Not yet assigned',
             'Current Status' => $candidate->status,
         ];
+
+        $screeningPayment = $candidate->payments()
+            ->where('type', 'screening')
+            ->where('status', 'success')
+            ->latest()
+            ->first();
+
+        $olevelResult = $candidate->olevelResult;
     @endphp
 
     <div class="py-12">
@@ -58,7 +66,34 @@
                                 Pay Screening Fee
                             </a>
                         @else
-                            <p class="font-semibold text-green-600">Screening fee paid ✓</p>
+                            <div class="space-y-4">
+                                <div class="flex flex-wrap items-center gap-4">
+                                    <p class="font-semibold text-green-600">Screening fee paid ✓</p>
+                                    @if ($screeningPayment)
+                                        <a
+                                            href="{{ route('candidate.payment.receipt', $screeningPayment) }}"
+                                            class="inline-block rounded-md bg-indigo-600 px-4 py-2 font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                        >
+                                            View Receipt
+                                        </a>
+                                    @endif
+                                </div>
+
+                                @if ($screeningPayment)
+                                    <div class="border-t border-gray-200 pt-4">
+                                        @if ($olevelResult)
+                                            <p class="font-semibold text-green-600">O'Level result submitted ✓</p>
+                                        @else
+                                            <a
+                                                href="{{ route('candidate.olevel.create') }}"
+                                                class="inline-block rounded-md bg-indigo-600 px-4 py-2 font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                            >
+                                                Upload O'Level Result
+                                            </a>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
                         @endif
                     </div>
                 </div>

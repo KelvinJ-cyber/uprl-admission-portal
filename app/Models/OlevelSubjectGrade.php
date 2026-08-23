@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OlevelSubjectGrade extends Model
 {
+    protected $table = 'olevel_subjects_grades';
+
     protected $fillable = [
         'olevel_result_id',
         'subject_name',

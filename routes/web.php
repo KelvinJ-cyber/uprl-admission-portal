@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Candidate\CandidateAuthController;
+use App\Http\Controllers\Candidate\OlevelController;
 use App\Http\Controllers\Candidate\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\CandidateImportController;
@@ -10,9 +11,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 //
-//Route::get('dashboard', function () {
+// Route::get('dashboard', function () {
 //    return view('staff.dashboard');
-//})->middleware(['auth', 'verified'])->name('dashboard');
+// })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -36,11 +37,21 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
     Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 
     Route::middleware(['candidate'])->group(function () {
+
         Route::post('/logout', [CandidateAuthController::class, 'destroy'])->name('logout');
         Route::get('/dashboard', function () {
             return view('candidate.dashboard');
         })->name('dashboard');
+
+        // Payment Routes
         Route::get('/payment/screening', [PaymentController::class, 'screeningPay'])->name('payment.screening');
+        Route::get('/payment/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payment.receipt');
+
+        // O'Level Routes
+        Route::get('/olevel/create', [OlevelController::class, 'create'])->name('olevel.create');
+        Route::post('/olevel', [OlevelController::class, 'store'])->name('olevel.store');
+        Route::get('/olevel/verify', [OlevelController::class, 'verify'])->name('olevel.verify');
+        Route::post('/olevel/verify', [OlevelController::class, 'confirmVerification'])->name('olevel.verify.store');
     });
 
 });

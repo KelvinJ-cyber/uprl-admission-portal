@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
@@ -12,9 +13,10 @@ class Payment extends Model
         'amount',
         'reference',
         'status',
+        'invoice_number',
     ];
 
-    public function candidate(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function candidate(): BelongsTo
     {
         return $this->belongsTo(Candidate::class);
     }
