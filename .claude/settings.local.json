@@ -67,7 +67,11 @@
       "Bash(then echo \"PRESENT : $c\")",
       "Bash(else echo \"MISSING : $c\")",
       "Bash(CSS=public/build/assets/app-C9tEpLi3.css)",
-      "Bash(for c in 'bg-green-600' 'bg-green-700' 'ring-green-500')"
+      "Bash(for c in 'bg-green-600' 'bg-green-700' 'ring-green-500')",
+      "Bash(CSS=public/build/assets/app-6beNQmAi.css for c in 'bg-green-600' 'bg-red-600' 'text-5xl')",
+      "Bash(done ~/.config/herd/bin/php84.bat artisan view:cache)",
+      "Bash(CSS=public/build/assets/app-6beNQmAi.css)",
+      "Bash(for c in 'bg-green-600' 'bg-red-600' 'text-5xl')"
     ],
     "deny": [],
     "ask": []

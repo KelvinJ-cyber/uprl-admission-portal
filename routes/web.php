@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Candidate\CandidateAuthController;
+use App\Http\Controllers\Candidate\EligibilityCheckController;
 use App\Http\Controllers\Candidate\OlevelController;
 use App\Http\Controllers\Candidate\PaymentController;
 use App\Http\Controllers\ProfileController;
@@ -28,6 +29,9 @@ Route::middleware(['staff'])->prefix('staff')->name('staff.')->group(function ()
     Route::get('candidate/import', [CandidateImportController::class, 'create'])->name('candidate.import');
     Route::post('/candidates/import', [CandidateImportController::class, 'store'])->name('candidates.import.store');
 });
+
+Route::get('/eligibility-check', [EligibilityCheckController::class, 'create'])->name('eligibility.check');
+Route::post('/eligibility-check', [EligibilityCheckController::class, 'check'])->name('eligibility.check.store');
 
 Route::prefix('candidate')->name('candidate.')->group(function () {
 

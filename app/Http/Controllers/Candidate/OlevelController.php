@@ -5,18 +5,26 @@ namespace App\Http\Controllers\Candidate;
 use App\Http\Controllers\Controller;
 use App\Models\OlevelResult;
 use App\Models\OlevelSubjectGrade;
+use App\Models\ScreeningReport;
+use App\Services\CourseEligibilityService;
 use Illuminate\Http\Request;
 
 class OlevelController extends Controller
 {
+
+    protected CourseEligibilityService $courseEligibilityService;
+
+    public function __construct(CourseEligibilityService $courseEligibilityService)
+    {
+        $this->courseEligibilityService = $courseEligibilityService;
+    }
     public function create()
     {
         $candidate = auth('candidate')->user();
 
-        // Prevent re-entry if already submitted
-        if ($candidate->olevelResult) {
+        if ($candidate->status === 'screening_passed') {
             return redirect()->route('candidate.dashboard')
-                ->with('error', 'O\'Level result already submitted.');
+                ->with('error', 'You have already passed screening.');
         }
 
         return view('candidate.olevel.create');
@@ -25,10 +33,9 @@ class OlevelController extends Controller
 
     public function store(Request $request)
     {
-
         $candidate = auth('candidate')->user();
 
-        $validatedData = $request->validate([
+        $validated = $request->validate([
             'exam_type' => ['required', 'in:WAEC,NECO,NABTEB'],
             'exam_year' => ['required', 'digits:4'],
             'exam_number' => ['required', 'string', 'max:50'],
@@ -38,30 +45,31 @@ class OlevelController extends Controller
             'subjects.*.grade' => ['required', 'string', 'in:A1,B2,B3,C4,C5,C6,D7,E8,F9'],
         ]);
 
-        $olevelResult = OlevelResult::create(
+        $olevelResult = OlevelResult::updateOrCreate(
+            ['candidate_id' => $candidate->id],
             [
-                'candidate_id' => $candidate->id,
-                'exam_type' => $validatedData['exam_type'],
-                'exam_year' => $validatedData['exam_year'],
-                'exam_number' => $validatedData['exam_number'],
-                'scratch_card_or_token' => $validatedData['scratch_card_or_token'],
+                'exam_type' => $validated['exam_type'],
+                'exam_year' => $validated['exam_year'],
+                'exam_number' => $validated['exam_number'],
+                'scratch_card_or_token' => $validated['scratch_card_or_token'],
                 'is_verified' => false,
             ]
         );
 
-        foreach ($validatedData['subjects'] as $subject) {
+        // Clear old subject/grade rows before adding the new ones
+        $olevelResult->subjectGrades()->delete();
+
+        foreach ($validated['subjects'] as $subject) {
             OlevelSubjectGrade::create([
                 'olevel_result_id' => $olevelResult->id,
                 'subject_name' => $subject['subject_name'],
                 'grade' => $subject['grade'],
             ]);
-
         }
 
         return redirect()->route('candidate.olevel.verify')
             ->with('success', 'O\'Level details submitted. Proceed to verification.');
     }
-
     public function verify()
     {
         $candidate = auth('candidate')->user();
@@ -81,7 +89,25 @@ class OlevelController extends Controller
 
         $olevelResult->update(['is_verified' => true]);
 
-        return redirect()->route('candidate.dashboard')
-            ->with('success', 'O\'Level result verified successfully.');
+        $result = $this->courseEligibilityService->checkEligibility($candidate, $candidate->course);
+        $status = $result['eligible'] ? 'screening_passed' : 'screening_pending';
+        $deficiencyReason = $result['eligible'] ? null : implode(' ', $result['reasons']);
+
+        ScreeningReport::create([
+            'candidate_id' => $candidate->id,
+            'status' => $status,
+            'deficiency_reason' => $deficiencyReason,
+            'generated_at' => now(),
+        ]);
+
+        $candidate->update(['status' => $status]);
+        $message = $result['eligible']
+            ? 'Congratulations! You have passed screening.'
+            : 'Screening incomplete: ' . $deficiencyReason;
+
+        return redirect()->route('candidate.dashboard')->with(
+            $result['eligible'] ? 'success' : 'error',
+            $message
+        );
     }
 }

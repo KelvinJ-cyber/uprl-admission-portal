@@ -82,7 +82,15 @@
                                 @if ($screeningPayment)
                                     <div class="border-t border-gray-200 pt-4">
                                         @if ($olevelResult)
-                                            <p class="font-semibold text-green-600">O'Level result submitted ✓</p>
+                                            <div class="flex flex-wrap items-center gap-4">
+                                                <p class="font-semibold text-green-600">O'Level result submitted ✓</p>
+                                                <a
+                                                    href="{{ route('candidate.olevel.create') }}"
+                                                    class="inline-block rounded-md bg-indigo-600 px-4 py-2 font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                                >
+                                                    Resubmit Result
+                                                </a>
+                                            </div>
                                         @else
                                             <a
                                                 href="{{ route('candidate.olevel.create') }}"

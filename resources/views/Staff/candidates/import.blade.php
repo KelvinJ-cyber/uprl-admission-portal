@@ -3,7 +3,7 @@
         <h1 class="text-2xl font-bold mb-4">Import Candidates from JAMB</h1>
 
         @if (session('status'))
-            @php $failuresCount = session('failures') ? session('failures')->count() : 0; @endphp
+            @php $failuresCount = session('failures') ? count(session('failures')) : 0; @endphp
             <div class="{{ $failuresCount > 0 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800' }} p-3 rounded mb-4">
                 {{ session('status') }}
                 @if ($failuresCount > 0)
@@ -12,14 +12,14 @@
             </div>
         @endif
 
-        @if (session('failures') && session('failures')->count() > 0)
+        @if (session('failures') && count(session('failures')) > 0)
             <div class="bg-red-100 text-red-800 p-3 rounded mb-4">
                 <p class="font-semibold mb-2">Failed Rows:</p>
                 <ul class="list-disc list-inside text-sm">
                     @foreach (session('failures') as $failure)
                         <li>
-                            Row {{ $failure->row() }}:
-                            {{ implode(', ', $failure->errors()) }}
+                            Row {{ $failure['row'] }}:
+                            {{ implode(', ', $failure['errors']) }}
                         </li>
                     @endforeach
                 </ul>

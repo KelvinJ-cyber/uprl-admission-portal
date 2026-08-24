@@ -24,11 +24,17 @@ class CandidateImportController extends Controller
 
         Excel::import($import, $request->file('file'));
 
-        $failures = $import->failures();
+        $failures = $import->failures()->map(function ($failure) {
+            return [
+                'row' => $failure->row(),
+                'errors' => $failure->errors(),
+            ];
+        });
 
         if ($failures->count() > 0) {
             return back()->with([
                 'status' => 'Import completed with some rows skipped.',
+                'failures_count' => $failures->count(),
                 'failures' => $failures,
             ]);
         }
