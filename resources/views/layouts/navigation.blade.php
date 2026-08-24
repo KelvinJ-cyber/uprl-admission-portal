@@ -28,6 +28,18 @@
                         <x-nav-link :href="$dashboardRoute" :active="$dashboardActive">
                             {{ __('Dashboard') }}
                         </x-nav-link>
+
+                        @if ($isCandidate)
+                            <x-nav-link :href="route('candidate.documents.index')" :active="request()->routeIs('candidate.documents.*')">
+                                {{ __('Documents') }}
+                            </x-nav-link>
+                        @endif
+
+                        @if ($webUser)
+                            <x-nav-link :href="route('staff.admissions.index')" :active="request()->routeIs('staff.admissions.*')">
+                                {{ __('Admissions') }}
+                            </x-nav-link>
+                        @endif
                     </div>
                 @endif
             </div>
@@ -89,6 +101,18 @@
                 <x-responsive-nav-link :href="$dashboardRoute" :active="$dashboardActive">
                     {{ __('Dashboard') }}
                 </x-responsive-nav-link>
+
+                @if ($isCandidate)
+                    <x-responsive-nav-link :href="route('candidate.documents.index')" :active="request()->routeIs('candidate.documents.*')">
+                        {{ __('Documents') }}
+                    </x-responsive-nav-link>
+                @endif
+
+                @if ($webUser)
+                    <x-responsive-nav-link :href="route('staff.admissions.index')" :active="request()->routeIs('staff.admissions.*')">
+                        {{ __('Admissions') }}
+                    </x-responsive-nav-link>
+                @endif
             </div>
 
             <!-- Responsive Settings Options -->

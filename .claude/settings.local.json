@@ -71,7 +71,11 @@
       "Bash(CSS=public/build/assets/app-6beNQmAi.css for c in 'bg-green-600' 'bg-red-600' 'text-5xl')",
       "Bash(done ~/.config/herd/bin/php84.bat artisan view:cache)",
       "Bash(CSS=public/build/assets/app-6beNQmAi.css)",
-      "Bash(for c in 'bg-green-600' 'bg-red-600' 'text-5xl')"
+      "Bash(for c in 'bg-green-600' 'bg-red-600' 'text-5xl')",
+      "Bash(cat tailwind.config.js)",
+      "Bash(cat resources/css/app.css)",
+      "Bash(CSS=public/build/assets/app-BFmmtRza.css)",
+      "Bash(for c in 'bg-blue-100' 'bg-yellow-100' 'bg-green-100' 'bg-red-100' 'bg-gray-100')"
     ],
     "deny": [],
     "ask": []

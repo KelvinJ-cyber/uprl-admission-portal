@@ -5,6 +5,7 @@ use App\Http\Controllers\Candidate\EligibilityCheckController;
 use App\Http\Controllers\Candidate\OlevelController;
 use App\Http\Controllers\Candidate\PaymentController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Staff\AdmissionsController;
 use App\Http\Controllers\Staff\CandidateImportController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,8 @@ Route::middleware(['staff'])->prefix('staff')->name('staff.')->group(function ()
     Route::get('/dashboard', function () {
         return view('staff.dashboard');
     })->name('dashboard');
+    Route::get('/admissions', [AdmissionsController::class, 'index'])->name('admissions.index');
+    Route::post('/admissions/{candidate}/recommend', [AdmissionsController::class, 'recommend'])->name('admissions.recommend');
     Route::get('candidate/import', [CandidateImportController::class, 'create'])->name('candidate.import');
     Route::post('/candidates/import', [CandidateImportController::class, 'store'])->name('candidates.import.store');
 });
@@ -56,6 +59,10 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::post('/olevel', [OlevelController::class, 'store'])->name('olevel.store');
         Route::get('/olevel/verify', [OlevelController::class, 'verify'])->name('olevel.verify');
         Route::post('/olevel/verify', [OlevelController::class, 'confirmVerification'])->name('olevel.verify.store');
+
+        // Document Routes
+        Route::get('/documents', [\App\Http\Controllers\Candidate\DocumentController::class, 'index'])->name('documents.index');
+        Route::post('/documents', [\App\Http\Controllers\Candidate\DocumentController::class, 'store'])->name('documents.store');
     });
 
 });
