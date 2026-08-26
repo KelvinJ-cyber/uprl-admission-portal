@@ -75,7 +75,16 @@
       "Bash(cat tailwind.config.js)",
       "Bash(cat resources/css/app.css)",
       "Bash(CSS=public/build/assets/app-BFmmtRza.css)",
-      "Bash(for c in 'bg-blue-100' 'bg-yellow-100' 'bg-green-100' 'bg-red-100' 'bg-gray-100')"
+      "Bash(for c in 'bg-blue-100' 'bg-yellow-100' 'bg-green-100' 'bg-red-100' 'bg-gray-100')",
+      "Bash(echo \"RM_EXIT=$?\")",
+      "Bash(CSS=public/build/assets/app-BOoma2Dw.css)",
+      "Bash(for c in 'bg-indigo-50' 'text-indigo-700' 'translate-x-0' 'translate-x-full' 'sm\\\\:static' 'bg-gray-900\\\\/50')",
+      "Bash(CSS=public/build/assets/app-BpEiyqO1.css)",
+      "Bash(for c in 'bg-gray-100' 'hover\\\\:bg-gray-200' 'border-gray-300' 'ring-gray-400')",
+      "Bash(~/.config/herd/bin/php84.bat artisan route:list --name=candidate.import)",
+      "Bash(~/.config/herd/bin/php84.bat artisan route:list --name=candidates.import)",
+      "Bash(CSS=public/build/assets/app-TDNzor3x.css)",
+      "Bash(for c in 'h-9' 'w-9' 'h-0\\\\.5' 'ring-4' 'ring-indigo-100' 'border-2' 'invisible')"
     ],
     "deny": [],
     "ask": []

@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Candidate\CandidateAuthController;
+use App\Http\Controllers\Candidate\DocumentController;
 use App\Http\Controllers\Candidate\EligibilityCheckController;
 use App\Http\Controllers\Candidate\OlevelController;
 use App\Http\Controllers\Candidate\PaymentController;
+use App\Http\Controllers\Candidate\ScreeningReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\AdmissionsController;
 use App\Http\Controllers\Staff\CandidateImportController;
@@ -61,8 +63,10 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::post('/olevel/verify', [OlevelController::class, 'confirmVerification'])->name('olevel.verify.store');
 
         // Document Routes
-        Route::get('/documents', [\App\Http\Controllers\Candidate\DocumentController::class, 'index'])->name('documents.index');
-        Route::post('/documents', [\App\Http\Controllers\Candidate\DocumentController::class, 'store'])->name('documents.store');
+        Route::get('/documents', [DocumentController::class, 'index'])->name('documents.index');
+        Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
+
+        Route::get('/screening-report/download', [ScreeningReportController::class, 'download'])->name('screening.report.download');
     });
 
 });

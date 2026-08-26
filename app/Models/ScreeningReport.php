@@ -14,6 +14,10 @@ class ScreeningReport extends Model
         'generated_at',
     ];
 
+    protected $casts = [
+        'generated_at' => 'datetime',
+    ];
+
     public function candidate(): BelongsTo
     {
         return $this->belongsTo(Candidate::class);

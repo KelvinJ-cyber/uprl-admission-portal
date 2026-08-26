@@ -18,9 +18,22 @@ class DocumentController extends Controller
         'lga_id',
     ];
 
+    protected array $allowedStatuses = [
+        'screening_passed',
+        'screening_pending',
+        'successfully_screened',
+        'recommended_for_admission',
+    ];
+
     public function index()
     {
         $candidate = auth('candidate')->user();
+
+        if (! in_array($candidate->status, $this->allowedStatuses)) {
+            return redirect()->route('candidate.dashboard')
+                ->with('error', "You must complete screening before uploading documents. Submit O'level results first.");
+        }
+
         $documents = $candidate->documents()->get()->keyBy('document_type');
 
         return view('candidate.documents.index', [
@@ -32,6 +45,11 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
         $candidate = auth('candidate')->user();
+
+        if (! in_array($candidate->status, $this->allowedStatuses)) {
+            return redirect()->route('candidate.dashboard')
+                ->with('error', 'You must complete screening before uploading documents.');
+        }
 
         $validated = $request->validate([
             'document_type' => ['required', 'in:' . implode(',', $this->documentTypes)],
@@ -54,7 +72,23 @@ class DocumentController extends Controller
             'original_filename' => $request->file('file')->getClientOriginalName(),
             'mime_type' => $request->file('file')->getClientMimeType(),
         ]);
+        $this->maybeMarkSuccessfullyScreened($candidate);
 
         return back()->with('success', ucfirst(str_replace('_', ' ', $validated['document_type'])) . ' uploaded successfully.');
+    }
+
+    protected function maybeMarkSuccessfullyScreened($candidate) : void
+    {
+
+        if ($candidate->status !== 'screening_passed') {
+            return;
+        }
+        $uploadedTypes = $candidate->documents()->pluck('document_type')->toArray();
+        $allUploaded = empty(array_diff($this->documentTypes, $uploadedTypes));
+
+        if ($allUploaded) {
+            $candidate->update(['status' => 'successfully_screened']);
+        }
+
     }
 }
