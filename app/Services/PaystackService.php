@@ -6,9 +6,8 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
-
-class PaystackService{
-
+class PaystackService
+{
     protected string $secret_key;
 
     public function __construct()
@@ -19,15 +18,16 @@ class PaystackService{
     /**
      * @throws ConnectionException
      */
-    public function initializePayment(string $email, float $amount, string $callback_url): array{
+    public function initializePayment(string $email, float $amount, string $callback_url): array
+    {
 
-        $reference = 'UPR-' . Str::upper(Str::random(12));
+        $reference = 'UPR-'.Str::upper(Str::random(12));
 
         $response = Http::withToken($this->secret_key)
             ->post('https://api.paystack.co/transaction/initialize', [
                 'email' => $email,
                 'amount' => $amount * 100, // Paystack expects amount in kobo
-                'callback_url' => $callback_url,
+                'callback_url' => $callback_url, // The URL to redirect to after payment
                 'reference' => $reference,
             ]);
 
@@ -39,7 +39,6 @@ class PaystackService{
             'authorization_url' => $data['data']['authorization_url'] ?? null,
             'reference' => $reference,
         ];
-
 
     }
 

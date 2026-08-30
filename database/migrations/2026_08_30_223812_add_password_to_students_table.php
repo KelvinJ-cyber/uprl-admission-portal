@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->string('invoice_number')->unique()->after('candidate_id');
-
+        Schema::table('students', function (Blueprint $table) {
+            $table->string('password')->after('student_email');
         });
     }
 
@@ -22,9 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('payments', function (Blueprint $table) {
-            $table->dropUnique(['invoice_number']);
-            $table->dropColumn('invoice_number');
+        Schema::table('students', function (Blueprint $table) {
+            //
         });
     }
 };

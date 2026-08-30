@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Student extends Model
+class Student extends Authenticatable
 {
     protected $fillable = [
         'candidate_id',
@@ -13,14 +13,26 @@ class Student extends Model
         'department_id',
         'matric_number',
         'student_email',
+        'password',
     ];
+
+    protected $hidden = [
+        'password',
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
 
     public function candidate(): BelongsTo
     {
         return $this->belongsTo(Candidate::class);
     }
 
-    public function faculty():BelongsTo
+    public function faculty(): BelongsTo
     {
         return $this->belongsTo(Faculty::class);
     }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Candidate;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
@@ -52,7 +51,7 @@ class DocumentController extends Controller
         }
 
         $validated = $request->validate([
-            'document_type' => ['required', 'in:' . implode(',', $this->documentTypes)],
+            'document_type' => ['required', 'in:'.implode(',', $this->documentTypes)],
             'file' => ['required', 'file', 'mimes:pdf,jpeg,jpg', 'max:2048'],
         ]);
 
@@ -63,7 +62,7 @@ class DocumentController extends Controller
             $existing->delete();
         }
 
-        $path = $request->file('file')->store('documents/' . $candidate->id, 'public');
+        $path = $request->file('file')->store('documents/'.$candidate->id, 'public');
 
         Document::create([
             'candidate_id' => $candidate->id,
@@ -74,21 +73,18 @@ class DocumentController extends Controller
         ]);
         $this->maybeMarkSuccessfullyScreened($candidate);
 
-        return back()->with('success', ucfirst(str_replace('_', ' ', $validated['document_type'])) . ' uploaded successfully.');
+        return back()->with('success', ucfirst(str_replace('_', ' ', $validated['document_type'])).' uploaded successfully.');
     }
 
-    protected function maybeMarkSuccessfullyScreened($candidate) : void
+    protected function maybeMarkSuccessfullyScreened($candidate): void
     {
 
         if ($candidate->status !== 'screening_passed') {
             return;
         }
+
         $uploadedTypes = $candidate->documents()->pluck('document_type')->toArray();
         $allUploaded = empty(array_diff($this->documentTypes, $uploadedTypes));
-
-        if ($allUploaded) {
-            $candidate->update(['status' => 'successfully_screened']);
-        }
 
     }
 }

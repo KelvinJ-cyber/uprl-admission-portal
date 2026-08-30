@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers\Staff;
 
+use App\Exports\RecommendedCandidatesExport;
 use App\Http\Controllers\Controller;
 use App\Models\Candidate;
 use App\Models\Course;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AdmissionsController extends Controller
 {
     public function index(Request $request)
     {
         // query candidates with their course and faculty
-        $query = Candidate::with(['course','course.faculty']);
+        $query = Candidate::with(['course', 'course.faculty']);
 
         // Apply filters based on request parameters. what this does is that it checks if the request has a parameter called 'course_id',
         // and if it does, it filters the candidates to only include those who have that course_id. It does the same for 'faculty_id', 'state_of_origin', 'min_utme_score', and 'status'.
@@ -62,5 +64,38 @@ class AdmissionsController extends Controller
         ]);
 
         return back()->with('success', "{$candidate->first_name} {$candidate->surname} has been recommended for admission.");
+    }
+
+    public function exportToCaps()
+    {
+        $candidates = Candidate::where('status', 'recommended_for_admission')->get();
+
+        if ($candidates->isEmpty()) {
+            return back()->with('error', 'No candidates are currently recommended for admission.');
+        }
+
+        $export = new RecommendedCandidatesExport;
+
+        $filename = 'jamb-caps-export-'.now()->format('Ymd-His').'.csv';
+
+        // Generate the export FIRST, while status is still correct
+        $response = Excel::download($export, $filename);
+        echo 'Hello';
+
+        // THEN update status, now that the export has captured the right candidates
+        Candidate::where('status', 'recommended_for_admission')->update(['status' => 'pending_admission']);
+
+        return $response;
+    }
+
+    public function markAdmitted(Candidate $candidate)
+    {
+        if ($candidate->status !== 'pending_admission') {
+            return back()->with('error', 'Only candidates pending admission can be marked as admitted.');
+        }
+
+        $candidate->update(['status' => 'admitted']);
+
+        return back()->with('success', "{$candidate->first_name} {$candidate->surname} has been marked as ADMITTED.");
     }
 }

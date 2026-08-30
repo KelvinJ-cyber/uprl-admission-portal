@@ -18,6 +18,14 @@ class Staff extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
+     * Resolve the factory for the model.
+     */
+    protected static function newFactory(): UserFactory
+    {
+        return UserFactory::new();
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

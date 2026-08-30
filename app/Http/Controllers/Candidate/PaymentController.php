@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Services\PaystackService;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class PaymentController extends Controller
@@ -34,7 +35,7 @@ class PaymentController extends Controller
             callback_url: route('candidate.payment.callback')
         );
 
-        $invoiceNumber = 'INV-'.now()->format('Ymd').'-'.str_pad($candidate->id, 5, '0', STR_PAD_LEFT);
+        $invoiceNumber = 'INV-'.now()->format('Ymd').'-'.str_pad($candidate->id, 5, '0', STR_PAD_LEFT).'-'.strtoupper(Str::random(4));
 
         Payment::create([
             'candidate_id' => $candidate->id,
@@ -45,7 +46,7 @@ class PaymentController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect($result['authorization_url']);
+        return redirect($result['authorization_url']); // redirect to Paystack payment page
 
     }
 
@@ -64,9 +65,16 @@ class PaymentController extends Controller
 
         if ($verification['data']['status'] === 'success') {
             $payment->update(['status' => 'success']);
-            $payment->candidate->update(['status' => 'payment_confirmed']);
 
-            return redirect()->route('candidate.dashboard')->with('success', 'Payment successful! You may proceed to screening.');
+            if ($payment->type === 'screening') {
+                $payment->candidate->update(['status' => 'payment_confirmed']);
+                $message = 'Payment successful! You may proceed to screening.';
+            } elseif ($payment->type === 'acceptance') {
+                $payment->candidate->update(['status' => 'acceptance_confirmed']);
+                $message = 'Acceptance fee paid successfully! Welcome to UPR.';
+            }
+
+            return redirect()->route('candidate.dashboard')->with('success', $message);
         }
 
         $payment->update(['status' => 'failed']);
@@ -79,5 +87,38 @@ class PaymentController extends Controller
         abort_if($payment->candidate_id !== auth('candidate')->id(), 403);
 
         return view('candidate.payment.receipt', ['payment' => $payment]);
+    }
+
+    /**
+     * @throws ConnectionException
+     */
+    public function acceptancePay(Request $request)
+    {
+        $candidate = auth('candidate')->user();
+
+        if ($candidate->status !== 'admitted') {
+            return back()->with('error', 'Acceptance fee is only payable once you have been admitted.');
+        }
+
+        $acceptanceFee = 5000;
+
+        $result = $this->paystack->initializePayment(
+            email: $candidate->email ?? 'test@upr.edu.ng',
+            amount: $acceptanceFee,
+            callback_url: route('candidate.payment.callback')
+        );
+        $invoiceNumber = 'INV-'.now()->format('Ymd').'-'.str_pad($candidate->id, 5, '0', STR_PAD_LEFT).'-'.strtoupper(Str::random(4));
+
+        Payment::create([
+            'candidate_id' => $candidate->id,
+            'invoice_number' => $invoiceNumber,
+            'type' => 'acceptance',
+            'amount' => $acceptanceFee,
+            'reference' => $result['reference'],
+            'status' => 'pending',
+        ]);
+
+        return redirect($result['authorization_url']);
+
     }
 }

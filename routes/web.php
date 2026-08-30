@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Candidate\AdmissionLetterController;
 use App\Http\Controllers\Candidate\CandidateAuthController;
 use App\Http\Controllers\Candidate\DocumentController;
 use App\Http\Controllers\Candidate\EligibilityCheckController;
 use App\Http\Controllers\Candidate\OlevelController;
 use App\Http\Controllers\Candidate\PaymentController;
 use App\Http\Controllers\Candidate\ScreeningReportController;
+use App\Http\Controllers\Candidate\StudentConversionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\AdmissionsController;
 use App\Http\Controllers\Staff\CandidateImportController;
@@ -33,6 +35,9 @@ Route::middleware(['staff'])->prefix('staff')->name('staff.')->group(function ()
     Route::post('/admissions/{candidate}/recommend', [AdmissionsController::class, 'recommend'])->name('admissions.recommend');
     Route::get('candidate/import', [CandidateImportController::class, 'create'])->name('candidate.import');
     Route::post('/candidates/import', [CandidateImportController::class, 'store'])->name('candidates.import.store');
+
+    Route::post('/admissions/export-caps', [AdmissionsController::class, 'exportToCaps'])->name('admissions.export.caps');
+    Route::post('/admissions/{candidate}/mark-admitted', [AdmissionsController::class, 'markAdmitted'])->name('admissions.mark.admitted');
 });
 
 Route::get('/eligibility-check', [EligibilityCheckController::class, 'create'])->name('eligibility.check');
@@ -55,6 +60,7 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         // Payment Routes
         Route::get('/payment/screening', [PaymentController::class, 'screeningPay'])->name('payment.screening');
         Route::get('/payment/{payment}/receipt', [PaymentController::class, 'receipt'])->name('payment.receipt');
+        Route::get('/payment/acceptance', [PaymentController::class, 'acceptancePay'])->name('payment.acceptance');
 
         // O'Level Routes
         Route::get('/olevel/create', [OlevelController::class, 'create'])->name('olevel.create');
@@ -67,6 +73,10 @@ Route::prefix('candidate')->name('candidate.')->group(function () {
         Route::post('/documents', [DocumentController::class, 'store'])->name('documents.store');
 
         Route::get('/screening-report/download', [ScreeningReportController::class, 'download'])->name('screening.report.download');
+        Route::get('/admission-letter/download', [AdmissionLetterController::class, 'download'])->name('admission.letter.download');
+
+        Route::post('/convert-to-student', [StudentConversionController::class, 'convert'])->name('convert.student');
+
     });
 
 });

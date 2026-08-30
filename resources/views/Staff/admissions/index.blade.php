@@ -12,6 +12,8 @@
             'screening_passed',
             'screening_pending',
             'recommended_for_admission',
+            'pending_admission',
+            'admitted',
         ];
 
         $statusStyles = [
@@ -20,6 +22,8 @@
             'screening_passed' => 'bg-green-100 text-green-800',
             'screening_pending' => 'bg-red-100 text-red-800',
             'recommended_for_admission' => 'bg-blue-100 text-blue-800',
+            'pending_admission' => 'bg-amber-100 text-amber-800',
+            'admitted' => 'bg-emerald-100 text-emerald-800',
         ];
     @endphp
 
@@ -39,6 +43,19 @@
 
             <div class="bg-white overflow-hidden shadow-sm rounded-lg">
                 <div class="p-6 text-gray-900">
+                    <form method="POST" action="{{ route('staff.admissions.export.caps') }}" class="mb-6 flex justify-end">
+                        @csrf
+                        <button
+                            type="submit"
+                            class="inline-flex items-center gap-2 rounded-md bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:ring-offset-2"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-4 w-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            Export Recommended Candidates to JAMB CAPS
+                        </button>
+                    </form>
+
                     <form method="GET" action="{{ route('staff.admissions.index') }}" class="mb-6 flex flex-wrap items-end gap-4">
                         <div>
                             <label for="course_id" class="block text-xs font-medium text-gray-500 mb-1">Course</label>
@@ -147,9 +164,21 @@
                                                     </button>
                                                 </form>
                                             @elseif ($candidate->status === 'recommended_for_admission')
-                                                <span class="font-medium text-green-600">Recommended </span>
+                                                <span class="font-medium text-green-600">Recommended ✓</span>
+                                            @elseif ($candidate->status === 'pending_admission')
+                                                <form method="POST" action="{{ route('staff.admissions.mark.admitted', $candidate) }}">
+                                                    @csrf
+                                                    <button
+                                                        type="submit"
+                                                        class="inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                                                    >
+                                                        Mark as Admitted
+                                                    </button>
+                                                </form>
+                                            @elseif ($candidate->status === 'admitted')
+                                                <span class="font-semibold text-emerald-700">Admitted ✓</span>
                                             @else
-                                                <span class="text-gray-400"></span>
+                                                <span class="text-gray-400">—</span>
                                             @endif
                                         </td>
                                     </tr>

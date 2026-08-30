@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId("candidate_id")->constrained()->cascadeOnDelete();
+            $table->foreignId('candidate_id')->constrained()->cascadeOnDelete();
+            $table->string('invoice_number')->unique();
             $table->enum('type', ['screening', 'acceptance']);
             $table->decimal('amount', 10, 2);
             $table->string('reference')->unique();
