@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\EnsureCandidateIsAuthenticated;
+use App\Http\Middleware\EnsureStaffIsAuthenticated;
+use App\Http\Middleware\EnsureStudentIsAuthenticated;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,8 +16,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'staff' => \App\Http\Middleware\EnsureStaffIsAuthenticated::class,
-            'candidate' => \App\Http\Middleware\EnsureCandidateIsAuthenticated::class
+            'staff' => EnsureStaffIsAuthenticated::class,
+            'candidate' => EnsureCandidateIsAuthenticated::class,
+            'student' => EnsureStudentIsAuthenticated::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

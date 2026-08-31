@@ -33,6 +33,13 @@
                 >
                     Continue
                 </button>
+
+                <p class="mt-4 text-center text-sm text-gray-600">
+                    Already a student?
+                    <a href="{{ route('student.login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                        Login here
+                    </a>
+                </p>
             </form>
         </div>
     </div>
