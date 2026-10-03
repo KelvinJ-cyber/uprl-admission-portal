@@ -80,7 +80,6 @@ class AdmissionsController extends Controller
 
         // Generate the export FIRST, while status is still correct
         $response = Excel::download($export, $filename);
-        echo 'Hello';
 
         // THEN update status, now that the export has captured the right candidates
         Candidate::where('status', 'recommended_for_admission')->update(['status' => 'pending_admission']);
